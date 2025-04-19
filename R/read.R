@@ -619,6 +619,7 @@ wb_to_df <- function(
     types <- guess_col_type(tt)
     date_conv     <- as.Date
     datetime_conv <- as.POSIXct
+    hms_conv <- function(x) `class<-`(as.POSIXct(x), c("hms", "difftime"))
   } else {
     # TODO check if guessing only if !all() is possible
     if (any(xlsx_cols_names %in% names(types))) {
@@ -667,8 +668,8 @@ wb_to_df <- function(
       # convert "#NUM!" to "NaN" -- then converts to NaN
       # maybe consider this an option to instead return NA?
       if (length(nums)) z[nums] <- lapply(z[nums], function(i) as.numeric(replace(i, i == "#NUM!", "NaN")))
-      if (length(dtes)) z[dtes] <- lapply(z[dtes], date_conv, origin = origin)
-      if (length(poxs)) z[poxs] <- lapply(z[poxs], datetime_conv, origin = origin)
+      if (length(dtes)) z[dtes] <- lapply(z[dtes], as.Date)
+      if (length(poxs)) z[poxs] <- lapply(z[poxs], as.POSIXct)
       if (length(logs)) z[logs] <- lapply(z[logs], as.logical)
       if (isNamespaceLoaded("hms")) z[difs] <- lapply(z[difs], hms_conv)
 
